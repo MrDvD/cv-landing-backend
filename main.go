@@ -2,6 +2,7 @@ package main
 
 import (
 	"cv-landing/pkg/activity"
+	"cv-landing/pkg/files"
 	"cv-landing/pkg/handlers"
 	"database/sql"
 	"fmt"
@@ -34,14 +35,19 @@ func main() {
 	}
 
 	activity := handlers.ActivityHandler{
-		Repo: activity.RepositoryHandler{
+		Repo: activity.ActivityHandler{
 			DB: db,
+		},
+	}
+	skills := handlers.SkillsHandler{
+		Repo: files.FileHandler{
+			BasePath: []string{"public"},
 		},
 	}
 
 	apiMux := http.NewServeMux()
 	apiMux.HandleFunc("/activity/{type}/", activity.Get)
-	apiMux.HandleFunc("/skills/{type}", handlers.GetSkills)
+	apiMux.HandleFunc("/skills/{type}/", skills.Get)
 
 	apiHandler := http.StripPrefix("/"+apiVersion, apiMux)
 	mux := http.NewServeMux()

@@ -1,18 +1,31 @@
 package handlers
 
 import (
-	"fmt"
+	"cv-landing/pkg/files"
 	"net/http"
+	"path/filepath"
 )
 
-func GetSkills(w http.ResponseWriter, r *http.Request) {
+type SkillsHandler struct {
+	Repo files.FileHandler
+}
+
+func (h *SkillsHandler) Get(w http.ResponseWriter, r *http.Request) {
 	skillsType := r.PathValue("type")
 	switch skillsType {
 	case "hard":
-		fmt.Fprintln(w, "hard! wooow!")
+		h.getGeneric(w, append(h.Repo.BasePath, "hardskills.json")...)
 	case "soft":
-		fmt.Fprintln(w, "soft! boooo!")
-	default:
-		fmt.Fprintln(w, "oof! not found this one(")
+		h.getGeneric(w, append(h.Repo.BasePath, "softskills.json")...)
 	}
+}
+
+func (h *SkillsHandler) getGeneric(w http.ResponseWriter, path ...string) {
+	file, err := h.Repo.Get(filepath.Join(path...))
+	if err != nil {
+		w.WriteHeader(500)
+		w.Write([]byte(err.Error()))
+		return
+	}
+	w.Write([]byte(file.Content))
 }

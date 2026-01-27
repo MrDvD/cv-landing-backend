@@ -4,19 +4,19 @@ import (
 	"database/sql"
 )
 
-type RepositoryHandler struct {
+type ActivityHandler struct {
 	DB *sql.DB
 }
 
-func (h *RepositoryHandler) GetAll() ([]Activity, error) {
+func (h *ActivityHandler) GetAll() ([]Activity, error) {
 	return h.getGeneric(nil)
 }
 
-func (h *RepositoryHandler) GetAllOfType(activityType string) ([]Activity, error) {
+func (h *ActivityHandler) GetAllOfType(activityType string) ([]Activity, error) {
 	return h.getGeneric(&activityType)
 }
 
-func (h *RepositoryHandler) getGeneric(rawType *string) ([]Activity, error) {
+func (h *ActivityHandler) getGeneric(rawType *string) ([]Activity, error) {
 	activities := []Activity{}
 	var rows *sql.Rows
 	var err error
