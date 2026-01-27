@@ -4,11 +4,13 @@ import (
 	"cv-landing/pkg/activity"
 	"cv-landing/pkg/files"
 	"cv-landing/pkg/handlers"
+	"cv-landing/pkg/tags"
 	"database/sql"
 	"fmt"
 	"net/http"
 	"os"
 
+	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
 
@@ -44,18 +46,21 @@ func main() {
 			BasePath: []string{"public"},
 		},
 	}
+	tags := handlers.TagsHandler{
+		Repo: tags.TagsHandler{
+			DB: db,
+		},
+	}
 
-	apiMux := http.NewServeMux()
-	apiMux.HandleFunc("/activity/{type}/", activity.Get)
-	apiMux.HandleFunc("/skills/{type}/", skills.Get)
-
-	apiHandler := http.StripPrefix("/"+apiVersion, apiMux)
-	mux := http.NewServeMux()
-	mux.Handle(fmt.Sprintf("/%s/", apiVersion), apiHandler)
+	v1ApiRouter := mux.NewRouter().PathPrefix("/" + apiVersion).Subrouter()
+	v1ApiRouter.HandleFunc("/activity/{type:[[:alpha:]]+}/", activity.Get).Methods("GET")
+	v1ApiRouter.HandleFunc("/skills/{type:[[:alpha:]]+}/", skills.Get).Methods("GET")
+	v1ApiRouter.HandleFunc("/tags/{type:[[:alpha:]]+}/", tags.Get).Methods("GET")
+	v1ApiRouter.HandleFunc("/tags/{id:\\d+}/{type:[[:alpha:]]+}/", tags.Get).Methods("GET")
 
 	server := http.Server{
 		Addr:    ":8080",
-		Handler: mux,
+		Handler: v1ApiRouter,
 	}
 	fmt.Println("Starting a server...")
 	err = server.ListenAndServe()

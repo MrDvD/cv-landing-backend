@@ -37,6 +37,6 @@ create table ACTIVITIES (
 create table TAGS (
   name varchar(26) not null,
   type tag_type not null,
-  activity_id serial references ACTIVITIES(id) on delete cascade,
+  activity_id int not null references ACTIVITIES(id) on delete cascade,
   unique (activity_id, name, type)
 );

@@ -4,6 +4,8 @@ import (
 	"cv-landing/pkg/activity"
 	"encoding/json"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 type ActivityHandler struct {
@@ -11,7 +13,12 @@ type ActivityHandler struct {
 }
 
 func (h *ActivityHandler) Get(w http.ResponseWriter, r *http.Request) {
-	activityType := r.PathValue("type")
+	vars := mux.Vars(r)
+	activityType, has := vars["type"]
+	if !has {
+		w.WriteHeader(400)
+		return
+	}
 	switch activityType {
 	case "projects":
 		h.getGeneric(w, "project")
@@ -19,20 +26,18 @@ func (h *ActivityHandler) Get(w http.ResponseWriter, r *http.Request) {
 		h.getGeneric(w, "education")
 	case "events":
 		h.getGeneric(w, "event")
+	default:
+		w.WriteHeader(400)
 	}
 }
 
 func (h *ActivityHandler) getGeneric(w http.ResponseWriter, activityType string) {
 	activities, err := h.Repo.GetAllOfType(activityType)
-	if err != nil {
-		w.WriteHeader(500)
-		w.Write([]byte(err.Error()))
+	if hasError(w, err) {
 		return
 	}
 	result, err := json.Marshal(activities)
-	if err != nil {
-		w.WriteHeader(500)
-		w.Write([]byte(err.Error()))
+	if hasError(w, err) {
 		return
 	}
 	w.Write(result)

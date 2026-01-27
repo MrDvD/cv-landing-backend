@@ -6,7 +6,11 @@ type Tag struct {
 	ActivityId int
 }
 
+type TagFilter struct {
+	ActivityID *int
+	TagType    *string
+}
+
 type TagsRepository interface {
-	GetAll(activityId int) ([]Tag, error)
-	GetAllOfType(activityId int, tagType string) ([]Tag, error)
+	Get(filter TagFilter) ([]Tag, error)
 }
