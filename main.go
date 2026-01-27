@@ -4,6 +4,7 @@ import (
 	"cv-landing/pkg/activity"
 	"cv-landing/pkg/files"
 	"cv-landing/pkg/handlers"
+	"cv-landing/pkg/middleware"
 	"cv-landing/pkg/tags"
 	"database/sql"
 	"fmt"
@@ -28,6 +29,7 @@ func main() {
 	user := mustGetEnv("POSTGRES_USER")
 	password := mustGetEnv("POSTGRES_PASSWORD")
 	host := mustGetEnv("POSTGRES_HOST")
+	frontendDomain := mustGetEnv("FRONTEND_DOMAIN")
 
 	dsn := fmt.Sprintf("user=%s password=%s host=%s sslmode=disable", user, password, host)
 	db, err := sql.Open("postgres", dsn)
@@ -60,7 +62,7 @@ func main() {
 
 	server := http.Server{
 		Addr:    ":8080",
-		Handler: v1ApiRouter,
+		Handler: middleware.EnableCors(v1ApiRouter, frontendDomain),
 	}
 	fmt.Println("Starting a server...")
 	err = server.ListenAndServe()
