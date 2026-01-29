@@ -32,8 +32,8 @@ func (h *ActivityHandler) getGeneric(rawType *string) ([]Activity, error) {
 		raw := &struct {
 			id           int
 			name         string
-			subtitle     string
-			description  sql.NullString
+			subtitle     sql.NullString
+			description  string
 			activityType string
 			metaLabel    sql.NullString
 			dateStart    string
@@ -44,13 +44,14 @@ func (h *ActivityHandler) getGeneric(rawType *string) ([]Activity, error) {
 			return []Activity{}, err
 		}
 		activity := Activity{
-			Name:      raw.name,
-			Subtitle:  raw.subtitle,
-			Type:      raw.activityType,
-			DateStart: raw.dateStart,
+			Id:          raw.id,
+			Name:        raw.name,
+			Description: raw.description,
+			Type:        raw.activityType,
+			DateStart:   raw.dateStart,
 		}
-		if raw.description.Valid {
-			activity.Description = &raw.description.String
+		if raw.subtitle.Valid {
+			activity.Subtitle = &raw.subtitle.String
 		}
 		if raw.metaLabel.Valid {
 			activity.MetaLabel = &raw.metaLabel.String

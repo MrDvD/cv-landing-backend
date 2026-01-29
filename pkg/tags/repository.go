@@ -22,8 +22,9 @@ func (h *TagsHandler) Get(filter TagFilter) ([]Tag, error) {
 			name       string
 			tagType    string
 			activityId int
+			priority   *int
 		}{}
-		err := rows.Scan(&raw.name, &raw.tagType, &raw.activityId)
+		err := rows.Scan(&raw.name, &raw.tagType, &raw.activityId, &raw.priority)
 		if err != nil {
 			return []Tag{}, err
 		}
@@ -37,7 +38,7 @@ func (h *TagsHandler) Get(filter TagFilter) ([]Tag, error) {
 }
 
 func buildQuery(filter TagFilter) (string, []any) {
-	baseQuery := "select name, type, activity_id from TAGS"
+	baseQuery := "select name, type, activity_id, priority from TAGS"
 	whereConditions := []string{}
 	whereValues := []any{}
 	if filter.ActivityID != nil {

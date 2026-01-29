@@ -2,6 +2,7 @@ package main
 
 import (
 	"cv-landing/pkg/activity"
+	"cv-landing/pkg/attachments"
 	"cv-landing/pkg/files"
 	"cv-landing/pkg/handlers"
 	"cv-landing/pkg/middleware"
@@ -53,12 +54,18 @@ func main() {
 			DB: db,
 		},
 	}
+	attachments := handlers.AttachmentHandler{
+		Repo: attachments.AttachmentHandler{
+			DB: db,
+		},
+	}
 
 	v1ApiRouter := mux.NewRouter().PathPrefix("/" + apiVersion).Subrouter()
 	v1ApiRouter.HandleFunc("/activity/{type:[[:alpha:]]+}/", activity.Get).Methods("GET")
 	v1ApiRouter.HandleFunc("/skills/{type:[[:alpha:]]+}/", skills.Get).Methods("GET")
 	v1ApiRouter.HandleFunc("/tags/{type:[[:alpha:]]+}/", tags.Get).Methods("GET")
 	v1ApiRouter.HandleFunc("/tags/{id:\\d+}/{type:[[:alpha:]]+}/", tags.Get).Methods("GET")
+	v1ApiRouter.HandleFunc("/attachments/{id:\\d+}/", attachments.Get).Methods("GET")
 
 	server := http.Server{
 		Addr:    ":8080",

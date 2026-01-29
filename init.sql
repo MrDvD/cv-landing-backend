@@ -26,8 +26,8 @@ create type activity_type as enum(
 create table ACTIVITIES (
   id serial primary key,
   name text not null,
-  subtitle text not null,
-  description text,
+  subtitle text,
+  description text not null,
   type activity_type not null,
   meta_label text,
   date_start date not null,
@@ -38,5 +38,14 @@ create table TAGS (
   name varchar(26) not null,
   type tag_type not null,
   activity_id int not null references ACTIVITIES(id) on delete cascade,
+  priority int,
   unique (activity_id, name, type)
+);
+
+create table ATTACHMENTS (
+  id serial primary key,
+  name text not null,
+  link text not null,
+  priority int,
+  activity_id int not null references ACTIVITIES(id) on delete cascade
 );

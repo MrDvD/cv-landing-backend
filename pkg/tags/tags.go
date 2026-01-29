@@ -4,6 +4,7 @@ type Tag struct {
 	Name       string
 	Type       string
 	ActivityId int
+	Priority   *int
 }
 
 type TagFilter struct {

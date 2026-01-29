@@ -1,9 +1,10 @@
 package activity
 
 type Activity struct {
+	Id          int
 	Name        string
-	Subtitle    string
-	Description *string
+	Subtitle    *string
+	Description string
 	Type        string
 	MetaLabel   *string
 	DateStart   string
