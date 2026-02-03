@@ -29,7 +29,7 @@ create table ACTIVITIES (
   subtitle text,
   description text not null,
   type activity_type not null,
-  meta_label text,
+  meta_label varchar(16),
   date_start date not null,
   date_end date
 );

@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"cv-landing/pkg/tags"
+	"cv-landing-backend/pkg/tags"
 	"encoding/json"
 	"net/http"
 	"strconv"
@@ -36,5 +36,24 @@ func (t *TagsHandler) Get(w http.ResponseWriter, r *http.Request) {
 	if hasError(w, err) {
 		return
 	}
+	w.Write(result)
+}
+
+func (h *TagsHandler) Add(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var rawTag tags.Tag
+	err := decoder.Decode(&rawTag)
+	if hasError(w, err) {
+		return
+	}
+	newTag, err := h.Repo.Add(rawTag)
+	if hasError(w, err) {
+		return
+	}
+	result, err := json.Marshal(newTag)
+	if hasError(w, err) {
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
 	w.Write(result)
 }

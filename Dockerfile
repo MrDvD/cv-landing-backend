@@ -6,5 +6,5 @@ copy . .
 
 run go build
 
-entrypoint ["./cv-landing"]
+entrypoint ["./cv-landing-backend"]
 cmd []

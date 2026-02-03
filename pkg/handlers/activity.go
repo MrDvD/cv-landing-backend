@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"cv-landing/pkg/activity"
+	"cv-landing-backend/pkg/activity"
 	"encoding/json"
 	"net/http"
 
@@ -40,5 +40,24 @@ func (h *ActivityHandler) getGeneric(w http.ResponseWriter, activityType string)
 	if hasError(w, err) {
 		return
 	}
+	w.Write(result)
+}
+
+func (h *ActivityHandler) Add(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var rawActivity activity.Activity
+	err := decoder.Decode(&rawActivity)
+	if hasError(w, err) {
+		return
+	}
+	newActivity, err := h.Repo.Add(rawActivity)
+	if hasError(w, err) {
+		return
+	}
+	result, err := json.Marshal(newActivity)
+	if hasError(w, err) {
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
 	w.Write(result)
 }

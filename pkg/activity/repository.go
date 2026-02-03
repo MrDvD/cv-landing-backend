@@ -63,3 +63,13 @@ func (h *ActivityHandler) getGeneric(rawType *string) ([]Activity, error) {
 	}
 	return activities, nil
 }
+
+func (h *ActivityHandler) Add(item Activity) (Activity, error) {
+	var activityId int
+	err := h.DB.QueryRow("insert into ACTIVITIES(name, subtitle, description, type, meta_label, date_start, date_end) values ($1, $2, $3, $4, $5, $6, $7) returning id", item.Name, item.Subtitle, item.Description, item.Type, item.MetaLabel, item.DateStart, item.DateEnd).Scan(&activityId)
+	if err != nil {
+		return Activity{}, err
+	}
+	item.Id = activityId
+	return item, nil
+}

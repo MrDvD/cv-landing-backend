@@ -36,3 +36,13 @@ func (h *AttachmentHandler) Get(activityId int) ([]Attachment, error) {
 	}
 	return attachments, nil
 }
+
+func (h *AttachmentHandler) Add(item Attachment) (Attachment, error) {
+	var attachmentId int
+	err := h.DB.QueryRow("insert into ATTACHMENTS(name, link, priority, activity_id) values ($1, $2, $3, $4) returning id", item.Name, item.Link, item.Priority, item.ActivityId).Scan(&attachmentId)
+	if err != nil {
+		return Attachment{}, err
+	}
+	item.Id = attachmentId
+	return item, nil
+}

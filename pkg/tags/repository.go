@@ -11,7 +11,7 @@ type TagsHandler struct {
 }
 
 func (h *TagsHandler) Get(filter TagFilter) ([]Tag, error) {
-	query, whereValues := buildQuery(filter)
+	query, whereValues := buildGetQuery(filter)
 	rows, err := h.DB.Query(query, whereValues...)
 	if err != nil {
 		return []Tag{}, nil
@@ -37,7 +37,7 @@ func (h *TagsHandler) Get(filter TagFilter) ([]Tag, error) {
 	return tags, nil
 }
 
-func buildQuery(filter TagFilter) (string, []any) {
+func buildGetQuery(filter TagFilter) (string, []any) {
 	baseQuery := "select name, type, activity_id, priority from TAGS"
 	whereConditions := []string{}
 	whereValues := []any{}
@@ -59,4 +59,14 @@ func buildQuery(filter TagFilter) (string, []any) {
 		query = baseQuery
 	}
 	return query, whereValues
+}
+
+func (h *TagsHandler) Add(item Tag) (Tag, error) {
+	var tagId int
+	err := h.DB.QueryRow("insert into TAGS(name, type, activity_id, priority) values ($1, $2, $3, $4) returning id", item.Name, item.Type, item.ActivityId, item.Priority).Scan(&tagId)
+	if err != nil {
+		return Tag{}, err
+	}
+	item.Id = tagId
+	return item, nil
 }

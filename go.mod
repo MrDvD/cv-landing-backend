@@ -1,4 +1,4 @@
-module cv-landing
+module cv-landing-backend
 
 go 1.25
 

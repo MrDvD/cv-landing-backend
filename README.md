@@ -32,7 +32,8 @@ REST API сервис на Go для обслуживания данных ре�
    POSTGRES_USER=ваш_пользователь
    POSTGRES_PASSWORD=ваш_пароль
    POSTGRES_HOST=database
-   FRONTEND_DOMAIN=http://localhost:3000
+   PUBLIC_DOMAIN=http://your.domain:3000
+   PRIVATE_DOMAIN=http://localhost
    ```
 
 3. **Запуск сервисов**
@@ -40,7 +41,7 @@ REST API сервис на Go для обслуживания данных ре�
    docker-compose up -d
    ```
 
-API будет доступно по адресу `http://localhost:8080`
+API будет доступно по адресу `http://your.domain:3000`
 
 ## Документация API
 

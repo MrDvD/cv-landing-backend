@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"cv-landing/pkg/files"
+	"cv-landing-backend/pkg/files"
 	"net/http"
 	"path/filepath"
 
