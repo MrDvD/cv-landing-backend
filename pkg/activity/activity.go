@@ -12,7 +12,6 @@ type Activity struct {
 }
 
 type ActivityRepository interface {
-	GetAll() ([]Activity, error)
 	GetAllOfType(activityType string) ([]Activity, error)
 	Add(item Activity) (Activity, error)
 }

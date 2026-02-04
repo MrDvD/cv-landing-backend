@@ -8,23 +8,9 @@ type ActivityHandler struct {
 	DB *sql.DB
 }
 
-func (h *ActivityHandler) GetAll() ([]Activity, error) {
-	return h.getGeneric(nil)
-}
-
 func (h *ActivityHandler) GetAllOfType(activityType string) ([]Activity, error) {
-	return h.getGeneric(&activityType)
-}
-
-func (h *ActivityHandler) getGeneric(rawType *string) ([]Activity, error) {
 	activities := []Activity{}
-	var rows *sql.Rows
-	var err error
-	if rawType == nil {
-		rows, err = h.DB.Query("select id, name, subtitle, description, type, meta_label, date_start, date_end from ACTIVITIES")
-	} else {
-		rows, err = h.DB.Query("select id, name, subtitle, description, type, meta_label, date_start, date_end from ACTIVITIES where type = $1", *rawType)
-	}
+	rows, err := h.DB.Query("select id, name, subtitle, description, type, meta_label, date_start, date_end from ACTIVITIES where type = $1", activityType)
 	if err != nil {
 		return []Activity{}, err
 	}
