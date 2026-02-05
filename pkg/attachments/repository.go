@@ -6,7 +6,7 @@ type AttachmentHandler struct {
 	DB *sql.DB
 }
 
-func (h *AttachmentHandler) Get(activityId int) ([]Attachment, error) {
+func (h AttachmentHandler) Get(activityId int) ([]Attachment, error) {
 	rows, err := h.DB.Query("select id, name, link, priority from ATTACHMENTS where activity_id = $1", activityId)
 	if err != nil {
 		return []Attachment{}, err
@@ -37,7 +37,7 @@ func (h *AttachmentHandler) Get(activityId int) ([]Attachment, error) {
 	return attachments, nil
 }
 
-func (h *AttachmentHandler) Add(item Attachment) (Attachment, error) {
+func (h AttachmentHandler) Add(item Attachment) (Attachment, error) {
 	var attachmentId int
 	err := h.DB.QueryRow("insert into ATTACHMENTS(name, link, priority, activity_id) values ($1, $2, $3, $4) returning id", item.Name, item.Link, item.Priority, item.ActivityId).Scan(&attachmentId)
 	if err != nil {
@@ -45,4 +45,9 @@ func (h *AttachmentHandler) Add(item Attachment) (Attachment, error) {
 	}
 	item.Id = attachmentId
 	return item, nil
+}
+
+func (h AttachmentHandler) Remove(id int) error {
+	_, err := h.DB.Exec("delete from ATTACHMENTS where id = $1", id)
+	return err
 }

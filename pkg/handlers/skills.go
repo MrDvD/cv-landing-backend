@@ -9,7 +9,7 @@ import (
 )
 
 type SkillsHandler struct {
-	Repo files.FileHandler
+	Repo files.FileRepository
 }
 
 func (h *SkillsHandler) Get(w http.ResponseWriter, r *http.Request) {
@@ -21,9 +21,9 @@ func (h *SkillsHandler) Get(w http.ResponseWriter, r *http.Request) {
 	}
 	switch skillsType {
 	case "hard":
-		h.getGeneric(w, append(h.Repo.BasePath, "hardskills.json")...)
+		h.getGeneric(w, append(h.Repo.BasePath(), "hardskills.json")...)
 	case "soft":
-		h.getGeneric(w, append(h.Repo.BasePath, "softskills.json")...)
+		h.getGeneric(w, append(h.Repo.BasePath(), "softskills.json")...)
 	default:
 		w.WriteHeader(400)
 	}

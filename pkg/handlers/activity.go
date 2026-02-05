@@ -4,12 +4,13 @@ import (
 	"cv-landing-backend/pkg/activity"
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/gorilla/mux"
 )
 
 type ActivityHandler struct {
-	Repo activity.ActivityHandler
+	Repo activity.ActivityRepository
 }
 
 func (h *ActivityHandler) Get(w http.ResponseWriter, r *http.Request) {
@@ -60,4 +61,22 @@ func (h *ActivityHandler) Add(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusCreated)
 	w.Write(result)
+}
+
+func (h *ActivityHandler) Remove(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	rawActivityId, has := vars["id"]
+	if !has {
+		w.WriteHeader(400)
+		return
+	}
+	activityId, err := strconv.Atoi(rawActivityId)
+	if hasError(w, err) {
+		return
+	}
+	err = h.Repo.Remove(activityId)
+	if hasError(w, err) {
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }

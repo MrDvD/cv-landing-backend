@@ -35,6 +35,7 @@ create table ACTIVITIES (
 );
 
 create table TAGS (
+  id serial not null unique,
   name varchar(26) not null,
   type tag_type not null,
   activity_id int not null references ACTIVITIES(id) on delete cascade,
@@ -43,9 +44,10 @@ create table TAGS (
 );
 
 create table ATTACHMENTS (
-  id serial primary key,
+  id serial not null unique,
   name text not null,
   link text not null,
   priority int,
-  activity_id int not null references ACTIVITIES(id) on delete cascade
+  activity_id int not null references ACTIVITIES(id) on delete cascade,
+  unique(activity_id, name, link)
 );

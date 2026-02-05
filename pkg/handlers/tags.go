@@ -10,7 +10,7 @@ import (
 )
 
 type TagsHandler struct {
-	Repo tags.TagsHandler
+	Repo tags.TagsRepository
 }
 
 func (t *TagsHandler) Get(w http.ResponseWriter, r *http.Request) {
@@ -56,4 +56,22 @@ func (h *TagsHandler) Add(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusCreated)
 	w.Write(result)
+}
+
+func (h *TagsHandler) Remove(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	rawTagId, has := vars["id"]
+	if !has {
+		w.WriteHeader(400)
+		return
+	}
+	tagId, err := strconv.Atoi(rawTagId)
+	if hasError(w, err) {
+		return
+	}
+	err = h.Repo.Remove(tagId)
+	if hasError(w, err) {
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }

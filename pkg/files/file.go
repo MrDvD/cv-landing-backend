@@ -6,4 +6,5 @@ type File struct {
 
 type FileRepository interface {
 	Get(path string) (File, error)
+	BasePath() []string
 }

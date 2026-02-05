@@ -11,4 +11,5 @@ type Attachment struct {
 type AttachmentRepository interface {
 	Get(activityId int) ([]Attachment, error)
 	Add(item Attachment) (Attachment, error)
+	Remove(id int) error
 }

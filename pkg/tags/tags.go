@@ -16,4 +16,5 @@ type TagFilter struct {
 type TagsRepository interface {
 	Get(filter TagFilter) ([]Tag, error)
 	Add(item Tag) (Tag, error)
+	Remove(id int) error
 }

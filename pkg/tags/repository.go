@@ -10,7 +10,7 @@ type TagsHandler struct {
 	DB *sql.DB
 }
 
-func (h *TagsHandler) Get(filter TagFilter) ([]Tag, error) {
+func (h TagsHandler) Get(filter TagFilter) ([]Tag, error) {
 	query, whereValues := buildGetQuery(filter)
 	rows, err := h.DB.Query(query, whereValues...)
 	if err != nil {
@@ -61,7 +61,7 @@ func buildGetQuery(filter TagFilter) (string, []any) {
 	return query, whereValues
 }
 
-func (h *TagsHandler) Add(item Tag) (Tag, error) {
+func (h TagsHandler) Add(item Tag) (Tag, error) {
 	var tagId int
 	err := h.DB.QueryRow("insert into TAGS(name, type, activity_id, priority) values ($1, $2, $3, $4) returning id", item.Name, item.Type, item.ActivityId, item.Priority).Scan(&tagId)
 	if err != nil {
@@ -69,4 +69,9 @@ func (h *TagsHandler) Add(item Tag) (Tag, error) {
 	}
 	item.Id = tagId
 	return item, nil
+}
+
+func (h TagsHandler) Remove(id int) error {
+	_, err := h.DB.Exec("delete from TAGS where id = $1", id)
+	return err
 }

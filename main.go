@@ -48,7 +48,7 @@ func main() {
 	}
 	skills := handlers.SkillsHandler{
 		Repo: files.FileHandler{
-			BasePath: []string{"public"},
+			Path: []string{"public"},
 		},
 	}
 	tags := handlers.TagsHandler{
@@ -89,6 +89,10 @@ func main() {
 		privateRouter.HandleFunc("/activity/", activity.Add).Methods("POST")
 		privateRouter.HandleFunc("/tags/", tags.Add).Methods("POST")
 		privateRouter.HandleFunc("/attachments/", attachments.Add).Methods("POST")
+
+		privateRouter.HandleFunc("/activity/{id:\\d+}/", activity.Remove).Methods("DELETE")
+		privateRouter.HandleFunc("/tags/{id:\\d+}/", tags.Remove).Methods("DELETE")
+		privateRouter.HandleFunc("/attachments/{id:\\d+}/", attachments.Remove).Methods("DELETE")
 
 		privateServer := http.Server{
 			Addr:    privateDomain,

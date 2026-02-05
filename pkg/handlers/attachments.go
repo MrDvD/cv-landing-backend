@@ -10,7 +10,7 @@ import (
 )
 
 type AttachmentHandler struct {
-	Repo attachments.AttachmentHandler
+	Repo attachments.AttachmentRepository
 }
 
 func (h *AttachmentHandler) Get(w http.ResponseWriter, r *http.Request) {
@@ -52,4 +52,22 @@ func (h *AttachmentHandler) Add(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusCreated)
 	w.Write(result)
+}
+
+func (h *AttachmentHandler) Remove(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	rawAttachmentId, has := vars["id"]
+	if !has {
+		w.WriteHeader(400)
+		return
+	}
+	attachmentId, err := strconv.Atoi(rawAttachmentId)
+	if hasError(w, err) {
+		return
+	}
+	err = h.Repo.Remove(attachmentId)
+	if hasError(w, err) {
+		return
+	}
+	w.WriteHeader(http.StatusNoContent)
 }
