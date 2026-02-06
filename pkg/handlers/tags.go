@@ -62,7 +62,7 @@ func (h *TagsHandler) Remove(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	rawTagId, has := vars["id"]
 	if !has {
-		w.WriteHeader(400)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	tagId, err := strconv.Atoi(rawTagId)

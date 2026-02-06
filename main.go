@@ -94,6 +94,8 @@ func main() {
 		privateRouter.HandleFunc("/tags/{id:\\d+}/", tags.Remove).Methods("DELETE")
 		privateRouter.HandleFunc("/attachments/{id:\\d+}/", attachments.Remove).Methods("DELETE")
 
+		privateRouter.HandleFunc("/activity/{id:\\d+}/", activity.Edit).Methods("PATCH")
+
 		privateServer := http.Server{
 			Addr:    privateDomain,
 			Handler: privateRouter,

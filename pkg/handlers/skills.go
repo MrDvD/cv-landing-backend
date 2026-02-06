@@ -16,7 +16,7 @@ func (h *SkillsHandler) Get(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	skillsType, has := vars["type"]
 	if !has {
-		w.WriteHeader(400)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	switch skillsType {
@@ -25,7 +25,7 @@ func (h *SkillsHandler) Get(w http.ResponseWriter, r *http.Request) {
 	case "soft":
 		h.getGeneric(w, append(h.Repo.BasePath(), "softskills.json")...)
 	default:
-		w.WriteHeader(400)
+		w.WriteHeader(http.StatusBadRequest)
 	}
 }
 

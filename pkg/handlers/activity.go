@@ -3,6 +3,7 @@ package handlers
 import (
 	"cv-landing-backend/pkg/activity"
 	"encoding/json"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -67,11 +68,12 @@ func (h *ActivityHandler) Remove(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	rawActivityId, has := vars["id"]
 	if !has {
-		w.WriteHeader(400)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	activityId, err := strconv.Atoi(rawActivityId)
-	if hasError(w, err) {
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	err = h.Repo.Remove(activityId)
@@ -79,4 +81,40 @@ func (h *ActivityHandler) Remove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *ActivityHandler) Edit(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	rawActivityId, has := vars["id"]
+	if !has {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	activityId, err := strconv.Atoi(rawActivityId)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	bodyBytes, err := io.ReadAll(r.Body)
+	if hasError(w, err) {
+		return
+	}
+	var editOps []activity.EditField
+	err = json.Unmarshal(bodyBytes, &editOps)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	updatedActivity, err := h.Repo.Edit(activityId, editOps)
+	if hasError(w, err) {
+		return
+	}
+	serializedActivity, err := json.Marshal(updatedActivity)
+	if hasError(w, err) {
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(serializedActivity)
 }

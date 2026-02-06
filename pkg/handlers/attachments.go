@@ -58,7 +58,7 @@ func (h *AttachmentHandler) Remove(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	rawAttachmentId, has := vars["id"]
 	if !has {
-		w.WriteHeader(400)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	attachmentId, err := strconv.Atoi(rawAttachmentId)

@@ -4,7 +4,7 @@ import "net/http"
 
 func hasError(w http.ResponseWriter, err error) bool {
 	if err != nil {
-		w.WriteHeader(500)
+		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
 		return true
 	}
