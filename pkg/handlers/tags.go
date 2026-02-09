@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"cv-landing-backend/pkg/activity"
 	"cv-landing-backend/pkg/tags"
 	"encoding/json"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -74,4 +76,40 @@ func (h *TagsHandler) Remove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *TagsHandler) Edit(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	rawTagId, has := vars["id"]
+	if !has {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	tagId, err := strconv.Atoi(rawTagId)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	bodyBytes, err := io.ReadAll(r.Body)
+	if hasError(w, err) {
+		return
+	}
+	var editOps []activity.EditField
+	err = json.Unmarshal(bodyBytes, &editOps)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	updatedTag, err := h.Repo.Edit(tagId, editOps)
+	if hasError(w, err) {
+		return
+	}
+	serializedTag, err := json.Marshal(updatedTag)
+	if hasError(w, err) {
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(serializedTag)
 }

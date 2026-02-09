@@ -1,6 +1,7 @@
 package tags
 
 import (
+	"cv-landing-backend/pkg/activity"
 	"database/sql"
 	"fmt"
 	"strings"
@@ -74,4 +75,38 @@ func (h TagsHandler) Add(item Tag) (Tag, error) {
 func (h TagsHandler) Remove(id int) error {
 	_, err := h.DB.Exec("delete from TAGS where id = $1", id)
 	return err
+}
+
+func (h TagsHandler) Edit(id int, ops []activity.EditField) (Tag, error) {
+	query, values := buildUpdateQuery(ops)
+	rows, err := h.DB.Query(query, append(values, id)...)
+	if err != nil {
+		return Tag{}, err
+	}
+	var tag Tag
+	for rows.Next() {
+		err := rows.Scan(&tag.Id, &tag.Name, &tag.Type, &tag.Priority, &tag.ActivityId)
+		if err != nil {
+			return Tag{}, err
+		}
+	}
+	return tag, nil
+}
+
+func buildUpdateQuery(ops []activity.EditField) (string, []any) {
+	var query strings.Builder
+	query.WriteString("update TAGS")
+	setters := []string{}
+	values := []any{}
+	for i, op := range ops {
+		setters = append(setters, fmt.Sprintf("%s = $%d", op.Name, i+1))
+		values = append(values, op.Value)
+	}
+	if len(setters) != 0 {
+		query.WriteString(" SET ")
+	}
+	query.WriteString(strings.Join(setters, ", "))
+	query.WriteString(fmt.Sprintf(" where id = $%d", len(ops)+1))
+	query.WriteString(" returning id, name, type, priority, activity_id")
+	return query.String(), values
 }

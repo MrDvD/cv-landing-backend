@@ -1,5 +1,7 @@
 package tags
 
+import "cv-landing-backend/pkg/activity"
+
 type Tag struct {
 	Id         int
 	Name       string
@@ -17,4 +19,5 @@ type TagsRepository interface {
 	Get(filter TagFilter) ([]Tag, error)
 	Add(item Tag) (Tag, error)
 	Remove(id int) error
+	Edit(id int, ops []activity.EditField) (Tag, error)
 }

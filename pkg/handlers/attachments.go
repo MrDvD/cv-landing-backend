@@ -1,8 +1,10 @@
 package handlers
 
 import (
+	"cv-landing-backend/pkg/activity"
 	"cv-landing-backend/pkg/attachments"
 	"encoding/json"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -70,4 +72,40 @@ func (h *AttachmentHandler) Remove(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
+}
+
+func (h *AttachmentHandler) Edit(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	rawAttachmentId, has := vars["id"]
+	if !has {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	attachmentId, err := strconv.Atoi(rawAttachmentId)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	bodyBytes, err := io.ReadAll(r.Body)
+	if hasError(w, err) {
+		return
+	}
+	var editOps []activity.EditField
+	err = json.Unmarshal(bodyBytes, &editOps)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	updatedAttachment, err := h.Repo.Edit(attachmentId, editOps)
+	if hasError(w, err) {
+		return
+	}
+	serializedAttachment, err := json.Marshal(updatedAttachment)
+	if hasError(w, err) {
+		return
+	}
+	w.WriteHeader(http.StatusOK)
+	w.Write(serializedAttachment)
 }
